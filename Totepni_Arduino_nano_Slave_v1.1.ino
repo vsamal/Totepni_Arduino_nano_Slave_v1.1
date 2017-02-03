@@ -56,11 +56,11 @@ void loop() {
   
   // readTemp();
   // readGET();
-  showtext("Kuchyn + K", "teplota", 8);
-  showtext("Pokoj puda", "teplota", 12);
-  showtext("Obyvak", "teplota", 14);
-  showtext("Loznice", "teplota", 16);
-  showtext("Venku", "teplota", 18);
+  showtext("Kuchyn + K", "teplota", 16);
+  showtext("Pokoj puda", "teplota", 20);
+  showtext("Obyvak", "teplota", 22);
+  showtext("Loznice", "teplota", 24);
+  showtext("Venku", "teplota", 22);
 
 
   clr_wdt();
@@ -88,9 +88,13 @@ void showtext(String radek1, String radek2, int radek3) {
   display.println(radek1);
   if(radek2 == "teplota"){
     display.print(prijmuto[radek3]);
+    display.print(".");
+    display.print(prijmuto[radek3 + 1]);
     display.print(" ");
     display.setTextSize(1);
-    display.print(prijmuto[10]);
+    display.print(prijmuto[18]);
+    display.print(".");
+    display.print(prijmuto[19]);
     display.println("%");
   }else{
     display.println(radek2);
@@ -103,14 +107,6 @@ void showtext(String radek1, String radek2, int radek3) {
  
 }
 
-
-
-
-void getI2Cvals(int val_int, int val_decimal){
-  
-        float val_dec = val_int + (val_decimal / 10);
-        return val_dec;  
-}
 
 
 
@@ -161,16 +157,11 @@ void priPrijmu(int b){
 
 
 void odeslatData() {
-  Serial.flush();
-  // Wire.write(prijmuto[0] + "." + prijmuto[1], 3);
-  int k = 1;
-  while(k <= 19){
-    Wire.write(k);
-    k++;
-  }
-  
-  // Wire.write(3);
-  clr_wdt();
+   Wire.flush();
+   Wire.write(33);
+   Serial.println("Data odeslana");
+   Wire.flush();
+   clr_wdt();
 }
 
 
