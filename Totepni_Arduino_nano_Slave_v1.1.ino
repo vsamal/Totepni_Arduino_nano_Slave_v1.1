@@ -16,6 +16,8 @@ float prijmuto_dec;
 String prijmuto_text;
 
 
+byte rele_modul[17] = {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
 // SoftwareSerial SIM900(sw_rx, sw_tx); //RX,TX
 
 #define OLED_RESET 4
@@ -23,6 +25,7 @@ Adafruit_SSD1306 display(OLED_RESET);
 
 
 #if (SSD1306_LCDHEIGHT != 32)
+/// #if (SSD1306_LCDHEIGHT != 64)
 #error("Height incorrect, please fix Adafruit_SSD1306.h!");
 #endif
 
@@ -43,6 +46,14 @@ void setup()   {
 
   // by default, we'll generate the high voltage from the 3.3v line internally! (neat!)
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x32)
+  // display.begin(SSD1306_SWITCHCAPVCC, 0x3D);
+
+
+  // rele jako output
+  for(int i = 2; i <= 9; i++){
+        pinMode(i, OUTPUT);
+        digitalWrite(i, HIGH);
+  }
   
 
   // Clear the buffer.
@@ -63,6 +74,11 @@ void loop() {
   showtext("Venku", "teplota", 22);
 
 
+  // rele nastaveni relatek dle MASTER
+  for(int i = 2; i <= 9; i++){
+        digitalWrite(i, !prijmuto[i - 2]);
+  }
+
   clr_wdt();
 
 }
@@ -80,6 +96,7 @@ void showtext(String radek1, String radek2, int radek3) {
   int teplota = 1;
   int vlhkost = 2;
   
+  display.clearDisplay();
   display.setTextSize(2);
   display.setTextColor(WHITE, BLACK);
   display.setCursor(0,0);
