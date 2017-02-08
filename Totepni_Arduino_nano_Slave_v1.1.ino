@@ -11,11 +11,12 @@ int sw_rx = 2;
 int sw_tx = 3;
 
 // I2C buffer
-int prijmuto[27];
+int cnt_showtext;
+signed long cnt_show_text;
 float prijmuto_dec;
 String prijmuto_text;
 
-
+byte prijmuto[27] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 byte rele_modul[17] = {99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 // SoftwareSerial SIM900(sw_rx, sw_tx); //RX,TX
@@ -58,6 +59,9 @@ void setup()   {
   // Clear the buffer.
   display.clearDisplay();
 
+  cnt_showtext = 0;
+  cnt_show_text = millis();
+
 
 }
 
@@ -66,17 +70,29 @@ void loop() {
   
   // readTemp();
   // readGET();
-  showtext("Kuchyn + K", "teplota", 16);
-  showtext("Pokoj puda", "teplota", 20);
-  showtext("Obyvak", "teplota", 22);
-  showtext("Loznice", "teplota", 24);
-  showtext("Venku", "teplota", 22);
-
-
-  // rele nastaveni relatek dle MASTER
-  for(int i = 2; i <= 9; i++){
-        digitalWrite(i, !prijmuto[i - 2]);
+  if((millis() - cnt_show_text) > 2300){
+      cnt_showtext++;
+      cnt_show_text = millis();
+      Serial.print("cnt_show: ");
+      Serial.print(cnt_showtext);
+      Serial.print(" / ");
+      Serial.println(cnt_show_text);
   }
+  
+  if(cnt_showtext == 0){
+        showtext("Kuchyn + K", "teplota", 16);
+  }else  if(cnt_showtext == 1){
+    showtext("Pokoj puda", "teplota", 20);
+  }else  if(cnt_showtext == 2){
+    showtext("Obyvak", "teplota", 22);
+  }else  if(cnt_showtext == 3){
+    showtext("Loznice", "teplota", 24);
+  }else  if(cnt_showtext == 4){
+    showtext("Venku", "teplota", 22);
+  }else  if(cnt_showtext >= 5){
+    cnt_showtext = 0;
+  }
+
 
   clr_wdt();
 
@@ -116,8 +132,6 @@ void showtext(String radek1, String radek2, int radek3) {
     display.println(radek2);
   }
   display.display();
-  delay(2100);
-  display.clearDisplay();
 
   clr_wdt();
  
@@ -156,6 +170,21 @@ void priPrijmu(int b){
         Serial.println(prijmuto[prijmuto_counter]);
         prijmuto_counter++;
     }
+
+
+
+
+    // rele nastaveni relatek dle MASTER
+    /*
+    for(int i = 2; i <= 9; i++){
+           
+                digitalWrite(i, !prijmuto[(i - 2)]);
+                Serial.print("Write: ");
+                Serial.print(i - 2);
+                Serial.print(" => ");
+                Serial.println(!prijmuto[(i - 2)]);
+    }
+    */
 
     Serial.println("--- End Read ---");
 
